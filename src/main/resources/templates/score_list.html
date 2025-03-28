@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>成绩列表</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>成绩列表</h2>
+        </div>
+        <div class="col text-end">
+            <a th:href="@{/score/add}" class="btn btn-primary">添加成绩</a>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>学生姓名</th>
+            <th>考试名称</th>
+            <th>分数</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="score : ${scores}">
+            <td th:text="${score.id}"></td>
+            <td th:text="${score.username}"></td>
+            <td th:text="${score.examName}"></td>
+            <td th:text="${score.score}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>考试管理</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">考试系统</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/question/list">题库管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/exam/manage">考试管理</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <span class="navbar-text me-3">
+                        欢迎, <span th:text="${user.username}"></span>
+                    </span>
+                    <a href="/user/logout" class="btn btn-outline-danger">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="row mb-3">
+        <div class="col">
+            <h2>考试管理</h2>
+        </div>
+        <div class="col text-end">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createExamModal">
+                创建新考试
+            </button>
+        </div>
+    </div>
+
+    <!-- 考试列表 -->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>考试名称</th>
+            <th>题目数量</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="exam : ${exams}">
+            <td th:text="${exam.examName}"></td>
+            <td th:text="${exam.questionCount}"></td>
+            <td th:text="${#dates.format(exam.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td>
+                <button class="btn btn-info btn-sm" th:onclick="'viewExamDetails(' + ${exam.id} + ')'">查看详情</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 创建考试的模态框 -->
+<div class="modal fade" id="createExamModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">创建新考试</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createExamForm">
+                    <div class="mb-3">
+                        <label for="examName" class="form-label">考试名称</label>
+                        <input type="text" class="form-control" id="examName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="questionCount" class="form-label">题目数量</label>
+                        <input type="number" class="form-control" id="questionCount" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="createExam()">创建</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    function createExam() {
+        const examName = document.getElementById('examName').value;
+        const questionCount = document.getElementById('questionCount').value;
+
+        if (!examName || !questionCount) {
+            alert('请填写完整信息');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('examName', examName);
+        formData.append('questionCount', questionCount);
+
+        fetch('/exam/create', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('考试创建成功！');
+                location.reload();
+            })
+            .catch(error => {
+                alert('创建失败：' + error.message);
+            });
+    }
+
+    function viewExamDetails(examId) {
+        // 实现查看考试详情的功能
+        window.location.href = `/exam/${examId}/details`;
+    }
+</script>
+</body>
+</html>

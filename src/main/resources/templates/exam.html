@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>考试列表</title>
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">考试系统</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" href="/exam">考试列表</a>
+          </li>
+        </ul>
+        <div class="d-flex">
+                    <span class="navbar-text me-3">
+                        欢迎, <span th:text="${user.username}"></span>
+                    </span>
+          <a href="/user/logout" class="btn btn-outline-danger">退出登录</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <h2>可参加的考试</h2>
+  <div class="row mt-4">
+    <div class="col">
+      <div class="list-group">
+        <div th:each="exam : ${availableExams}" class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1" th:text="${exam.examName}"></h5>
+            <small th:text="${#dates.format(exam.createTime, 'yyyy-MM-dd HH:mm:ss')}"></small>
+          </div>
+          <p class="mb-1" th:text="'题目数量: ' + ${exam.questionCount}"></p>
+          <button class="btn btn-primary btn-sm" th:onclick="'startExam(' + ${exam.id} + ')'">开始考试</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<script>
+  function startExam(examId) {
+    window.location.href = `/exam/${examId}/start`;
+  }
+</script>
+</body>
+</html>

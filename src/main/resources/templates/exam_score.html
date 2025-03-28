@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>考试成绩</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div th:if="${scoreDetails != null}" class="score-container">
+        <h2>考试成绩单</h2>
+
+        <div class="score-details">
+            <div class="detail-item">
+                <label>考试名称：</label>
+                <span th:text="${scoreDetails.examName}">考试名称</span>
+            </div>
+
+            <div class="detail-item">
+                <label>考生姓名：</label>
+                <span th:text="${scoreDetails.userName}">考生姓名</span>
+            </div>
+
+            <div class="detail-item">
+                <label>考试得分：</label>
+                <span th:text="${scoreDetails.score}">得分</span>
+                <span th:text="'(' + ${scoreDetails.scorePercentage} + ')'">百分比</span>
+            </div>
+
+            <div class="detail-item">
+                <label>题目数量：</label>
+                <span th:text="${scoreDetails.questionCount}">题目数量</span>
+            </div>
+
+            <div class="detail-item">
+                <label>提交时间：</label>
+                <span th:text="${scoreDetails.submitTime}">提交时间</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/exam" class="btn btn-primary">返回考试列表</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .score-container {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .score-details {
+        margin: 20px 0;
+    }
+
+    .detail-item {
+        margin: 10px 0;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-item label {
+        font-weight: bold;
+        margin-right: 10px;
+        min-width: 100px;
+        display: inline-block;
+    }
+
+    .actions {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+</style>
+</body>
+</html>

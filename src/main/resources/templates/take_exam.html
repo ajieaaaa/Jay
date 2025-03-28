@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>参加考试</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div th:if="${exam != null}">
+        <h2 th:text="${exam.examName}">考试名称</h2>
+        <p>题目数量：<span th:text="${exam.questionCount}"></span></p>
+
+        <!-- 添加一个隐藏的input来存储examId -->
+        <input type="hidden" id="examId" th:value="${exam.id}">
+
+        <form id="examForm">
+            <div th:each="question, stat : ${questions}" class="question-container">
+                <div class="question">
+                    <p>
+                        <span th:text="${stat.count}">1</span>.
+                        <span th:text="${question.content}">题目内容</span>
+                    </p>
+                    <div class="options">
+                        <div>
+                            <input type="radio" th:name="${question.id}" value="A">
+                            <label th:text="${question.optionA}">选项A</label>
+                        </div>
+                        <div>
+                            <input type="radio" th:name="${question.id}" value="B">
+                            <label th:text="${question.optionB}">选项B</label>
+                        </div>
+                        <div>
+                            <input type="radio" th:name="${question.id}" value="C">
+                            <label th:text="${question.optionC}">选项C</label>
+                        </div>
+                        <div>
+                            <input type="radio" th:name="${question.id}" value="D">
+                            <label th:text="${question.optionD}">选项D</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">提交答案</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('examForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // 从隐藏的input中获取examId
+        const examId = document.getElementById('examId').value;
+        const answers = {};
+        const questions = document.querySelectorAll('.question');
+
+        questions.forEach(question => {
+            const questionId = question.querySelector('input[type="radio"]').name;
+            const selectedAnswer = question.querySelector('input[type="radio"]:checked');
+            if (selectedAnswer) {
+                answers[questionId] = selectedAnswer.value;
+            }
+        });
+
+        try {
+            const response = await fetch(`/exam/${examId}/submit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 添加CSRF令牌（如果你的Spring Security启用了CSRF保护）
+                    // 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                },
+                body: JSON.stringify(answers)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+                window.location.href = result.redirectUrl;
+            } else {
+                alert(result.error || '提交失败，请重试');
+            }
+        } catch (error) {
+            alert('提交失败，请重试');
+            console.error('Error:', error);
+        }
+    });
+
+    // 添加表单验证
+    function validateForm() {
+        const questions = document.querySelectorAll('.question');
+        let allAnswered = true;
+
+        questions.forEach(question => {
+            const answered = question.querySelector('input[type="radio"]:checked');
+            if (!answered) {
+                allAnswered = false;
+            }
+        });
+
+        if (!allAnswered) {
+            alert('请回答所有题目后再提交！');
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>
