@@ -5,165 +5,189 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-
-        body {
-            background: #f0f2f5;
-            padding: 40px 0;
-            min-height: 100vh;
-        }
-
-        .main-container {
-            width: 100%;
-            max-width: 900px;
-            margin: auto;
-            padding: 20px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            background: white;
-            padding: 20px;
-        }
-
-        .card-header {
-            background: transparent;
-            border-bottom: none;
-            padding: 20px 0;
-        }
-
-        .card-header h2 {
-            color: #1a1a1a;
-            font-size: 28px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .form-control, .form-select {
-            border-radius: 8px;
-            padding: 12px 15px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-        }
-
-        textarea.form-control {
-            min-height: 120px;
-        }
-
-        .form-label {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .btn {
-            height: 45px;
-            font-size: 16px;
-            font-weight: 500;
-            padding: 0 25px;
+        .image-upload-group {
+            border: 2px dashed #ccc;
+            padding: 1rem;
+            margin: 1rem 0;
             border-radius: 8px;
         }
-
-        .btn-row {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .option-group {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .option-group .form-label {
-            display: flex;
-            align-items: center;
-        }
-
-        .option-group .form-label::before {
-            content: attr(data-option);
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            background: #007bff;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 24px;
-            margin-right: 10px;
-            font-size: 14px;
-        }
-
-        .card-body {
-            padding: 20px 40px;
+        .preview-image {
+            max-width: 200px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-<div class="main-container">
-    <div class="card">
-        <div class="card-header">
-            <h2 class="text-center">添加题目</h2>
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">添加题目</h3>
         </div>
         <div class="card-body">
-            <form th:action="@{/question/add}" method="post">
-                <div class="mb-4">
-                    <label for="content" class="form-label">题目内容</label>
-                    <textarea class="form-control" id="content" name="content"
-                              placeholder="请输入题目内容" required></textarea>
+            <form th:action="@{/question/add}" method="post" enctype="multipart/form-data">
+
+                <!-- 新增字段组 -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label">题型</label>
+                        <select class="form-select" name="question_type" required>
+                            <option value="" disabled selected>请选择题型</option>
+                            <option value="SINGLE_CHOICE">单选题</option>
+                            <option value="MULTIPLE_CHOICE">多选题</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">知识点</label>
+                        <input type="text" class="form-control" name="knowledge_point"
+                               placeholder="输入知识点" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">难度</label>
+                        <select class="form-select" name="difficulty" required>
+                            <option value="" disabled selected>请选择难度</option>
+                            <option value="EASY">简单</option>
+                            <option value="MEDIUM">中等</option>
+                            <option value="HARD">困难</option>
+                        </select>
+                    </div>
                 </div>
 
+                <!-- 题目内容图文编辑 -->
+                <div class="mb-4">
+                    <label class="form-label">题目内容</label>
+                    <div class="image-upload-group">
+                        <textarea class="form-control mb-2" name="content"
+                                  placeholder="请输入题目文字内容（可插入图片）"
+                                  rows="3" required></textarea>
+                        <input type="file" class="form-control" name="contentImages"
+                               accept="image/*" multiple>
+                        <small class="text-muted">可上传多张图片（自动插入到文本末尾）</small>
+                    </div>
+                </div>
+
+                <!-- 选项图文编辑 -->
                 <div class="option-group">
-                    <div class="mb-3">
-                        <label for="optionA" class="form-label" data-option="A">选项A</label>
-                        <input type="text" class="form-control" id="optionA" name="optionA"
-                               placeholder="请输入选项A" required>
+                    <div class="mb-4">
+                        <label class="form-label">选项A</label>
+                        <div class="image-upload-group">
+                            <input type="text" class="form-control mb-2" name="optionA"
+                                   placeholder="文字选项A" required>
+                            <input type="file" class="form-control" name="optionAImage">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="optionB" class="form-label" data-option="B">选项B</label>
-                        <input type="text" class="form-control" id="optionB" name="optionB"
-                               placeholder="请输入选项B" required>
+
+                    <!-- 重复同样结构 for optionB, optionC, optionD -->
+                    <!-- Option B -->
+                    <div class="mb-4">
+                        <label class="form-label">选项B</label>
+                        <div class="image-upload-group">
+                            <input type="text" class="form-control mb-2" name="optionB"
+                                   placeholder="文字选项B" required>
+                            <input type="file" class="form-control" name="optionBImage">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="optionC" class="form-label" data-option="C">选项C</label>
-                        <input type="text" class="form-control" id="optionC" name="optionC"
-                               placeholder="请输入选项C" required>
+
+                    <!-- Option C -->
+                    <div class="mb-4">
+                        <label class="form-label">选项C</label>
+                        <div class="image-upload-group">
+                            <input type="text" class="form-control mb-2" name="optionC"
+                                   placeholder="文字选项C" required>
+                            <input type="file" class="form-control" name="optionCImage">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="optionD" class="form-label" data-option="D">选项D</label>
-                        <input type="text" class="form-control" id="optionD" name="optionD"
-                               placeholder="请输入选项D" required>
+
+                    <!-- Option D -->
+                    <div class="mb-4">
+                        <label class="form-label">选项D</label>
+                        <div class="image-upload-group">
+                            <input type="text" class="form-control mb-2" name="optionD"
+                                   placeholder="文字选项D" required>
+                            <input type="file" class="form-control" name="optionDImage">
+                        </div>
                     </div>
                 </div>
 
+                <!-- 正确答案选择 -->
+                <!-- 正确答案选择（支持多选） -->
                 <div class="mb-4">
-                    <label for="answer" class="form-label">正确答案</label>
-                    <select class="form-select" id="answer" name="answer" required>
-                        <option value="" disabled selected>请选择正确答案</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                    </select>
+                    <label class="form-label">正确答案</label>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       name="answers" id="answerA" value="A">
+                                <label class="form-check-label" for="answerA">
+                                    <span class="badge bg-primary me-2">A</span>选项A
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       name="answers" id="answerB" value="B">
+                                <label class="form-check-label" for="answerB">
+                                    <span class="badge bg-primary me-2">B</span>选项B
+                                </label>
+                            </div>
+                        </div>
+                        <!-- 类似结构添加选项C和D -->
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       name="answers" id="answerC" value="C">
+                                <label class="form-check-label" for="answerC">
+                                    <span class="badge bg-primary me-2">C</span>选项C
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       name="answers" id="answerD" value="D">
+                                <label class="form-check-label" for="answerD">
+                                    <span class="badge bg-primary me-2">D</span>选项D
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">请至少选择一个正确答案</small>
                 </div>
 
-                <div class="btn-row">
-                    <button type="submit" class="btn btn-primary">提交题目</button>
-                    <a th:href="@{/question/list}" class="btn btn-secondary">返回列表</a>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save me-2"></i>提交题目
+                    </button>
+                    <a th:href="@{/question/list}" class="btn btn-outline-secondary btn-lg">
+                        返回列表
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    // 实时预览图片功能
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function(e) {
+            const parent = this.closest('.image-upload-group');
+            const preview = parent.querySelector('.preview-image') || document.createElement('img');
+            preview.className = 'preview-image';
+
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    parent.appendChild(preview);
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    });
+</script>
 </body>
 </html>
