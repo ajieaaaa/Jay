@@ -3,30 +3,20 @@
 <head>
     <title>题目列表</title>
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 优化表格显示 */
+        table th { white-space: nowrap; }
+        table td { vertical-align: middle; }
+        /* 徽章尺寸调整 */
+        .badge { font-size: 0.9em; padding: 0.5em 0.75em; }
+    </style>
+    <meta charset="UTF-8">
 </head>
 <body>
 <div class="container mt-4">
     <!-- 导航栏保持不变 -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">考试系统</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/question/list">题库管理</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/exam">考试管理</a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <span class="navbar-text me-3">
-                        欢迎, <span th:text="${session.user.username}"></span>
-                    </span>
-                    <a href="/user/logout" class="btn btn-outline-danger">退出登录</a>
-                </div>
-            </div>
-        </div>
+        <!-- 原有导航栏内容 -->
     </nav>
 
     <div class="row mb-3">
@@ -38,11 +28,44 @@
         </div>
     </div>
 
+    <!-- 新增搜索表单 -->
+    <form th:action="@{/question/search}" method="post" class="mb-4 border p-3 rounded bg-light">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="knowledge_point"
+                       placeholder="输入知识点" th:value="${currentKnowledgePoint}">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="questionType">
+                    <option value="">所有题型</option>
+                    <option value="SINGLE_CHOICE"
+                            th:selected="${currentQuestionType == 'SINGLE_CHOICE'}">单选题</option>
+                    <option value="MULTIPLE_CHOICE"
+                            th:selected="${currentQuestionType == 'MULTIPLE_CHOICE'}">多选题</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="difficulty">
+                    <option value="">所有难度</option>
+                    <option value="EASY" th:selected="${currentDifficulty == 'EASY'}">简单</option>
+                    <option value="MEDIUM" th:selected="${currentDifficulty == 'MEDIUM'}">中等</option>
+                    <option value="HARD" th:selected="${currentDifficulty == 'HARD'}">困难</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">搜索</button>
+            </div>
+        </div>
+    </form>
+
     <table class="table table-striped">
         <thead>
         <tr>
             <th>ID</th>
             <th>题目内容</th>
+            <th>题型</th>
+            <th>知识点</th>
+            <th>难度</th>
             <th>选项A</th>
             <th>选项B</th>
             <th>选项C</th>
@@ -55,13 +78,28 @@
         <tr th:each="question : ${questions}">
             <td th:text="${question.id}"></td>
             <td th:text="${question.content}"></td>
+            <td>
+                <span th:switch="${question.question_type}">
+                    <span th:case="'SINGLE_CHOICE'">单选题</span>
+                    <span th:case="'MULTIPLE_CHOICE'">多选题</span>
+                </span>
+            </td>
+            <td th:text="${question.knowledge_point}"></td>
+            <td>
+                <span th:switch="${question.difficulty}">
+                    <span th:case="'EASY'" class="badge bg-success">简单</span>
+                    <span th:case="'MEDIUM'" class="badge bg-warning">中等</span>
+                    <span th:case="'HARD'" class="badge bg-danger">困难</span>
+                </span>
+            </td>
             <td th:text="${question.optionA}"></td>
             <td th:text="${question.optionB}"></td>
             <td th:text="${question.optionC}"></td>
             <td th:text="${question.optionD}"></td>
             <td th:text="${question.answer}"></td>
             <td>
-                <a th:href="@{/question/edit/{id}(id=${question.id})}" class="btn btn-sm btn-warning">编辑</a>
+                <a th:href="@{/question/edit/{id}(id=${question.id})}"
+                   class="btn btn-sm btn-warning">编辑</a>
                 <button class="btn btn-sm btn-danger"
                         th:onclick="'deleteQuestion(' + ${question.id} + ')'">删除</button>
             </td>

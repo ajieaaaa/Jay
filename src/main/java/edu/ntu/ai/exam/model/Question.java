@@ -11,5 +11,8 @@ public class Question {
     private String optionC;
     private String optionD;
     private String answer;
+    private String question_type;    // 题型
+    private String knowledge_point; // 知识点
+    private String difficulty;     // 难度
 
 }
